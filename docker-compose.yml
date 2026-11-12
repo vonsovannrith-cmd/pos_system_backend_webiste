@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: pos_system
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB_URL=jdbc:postgresql://ep-solitary-mountain-b3eaijq4-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+      - DB_USERNAME=neondb_owner
+      - DB_PASSWORD=npg_dlHFZ6g8hkjf
+    restart: always
