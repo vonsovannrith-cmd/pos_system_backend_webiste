@@ -1,29 +1,26 @@
-# Stage 1: Build the application using Maven
-FROM eclipse-temurin:17-jdk-alpine AS build
+
+# Stage 1: Build Spring Boot application
+FROM maven:3.9-eclipse-temurin-17 AS build
+
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml
+COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
-COPY pom.xml .
 
-# Give execution permission to mvnw (Fixes permission denied error)
 RUN chmod +x mvnw
 
-# Copy source code
-COPY src src
+COPY src ./src
 
-# Build the jar file (skip tests to speed up deployment)
 RUN ./mvnw clean package -DskipTests
 
-# Stage 2: Run the application
-FROM eclipse-temurin:17-jdk-alpine
+# Stage 2: Run application
+FROM eclipse-temurin:17-jre
+
 WORKDIR /app
 
-# Copy the built jar file from the build stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/pos_system-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
 
-ENTRYPOINT ["java", "-Djava.awt.headless=true", "-XX:MaxRAMPercentage=70", "-XX:+UseSerialGC", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
