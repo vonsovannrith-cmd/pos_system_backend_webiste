@@ -8,49 +8,46 @@ on:
     branches: [main, develop]
 
 jobs:
-  test:
+  backend-test:
     name: Backend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: pos_demo
-          POSTGRES_USER: pos_user
-          POSTGRES_PASSWORD: pos_password
+          POSTGRES_DB: pos_test_db
+          POSTGRES_USER: pos_test_user
+          POSTGRES_PASSWORD: pos_test_password
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U pos_user -d pos_demo"
+          --health-cmd "pg_isready -U pos_test_user -d pos_test_db"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
     env:
-      DB_URL: jdbc:postgresql://localhost:5432/pos_demo
-      DB_USERNAME: pos_user
-      DB_PASSWORD: pos_password
+      DB_URL: jdbc:postgresql://localhost:5432/pos_test_db
+      DB_USERNAME: pos_test_user
+      DB_PASSWORD: pos_test_password
       REDIS_ENABLED: "false"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
           cache: maven
 
-      - name: Wait for PostgreSQL
+      - name: Check PostgreSQL
         run: |
-          until pg_isready -h localhost -p 5432 -U pos_user -d pos_demo; do
-            sleep 2
-          done
-        env:
-          PGPASSWORD: pos_password
+          pg_isready -h localhost -p 5432 -U pos_test_user
 
-      - name: Run Tests
+      - name: Run Backend Tests
         run: mvn -B -ntp clean verify
