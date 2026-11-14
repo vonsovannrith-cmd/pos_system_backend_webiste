@@ -38,10 +38,7 @@ public class UserService {
     public UserAdminResponse create(CreateUserRequest request) {
         String email = request.email().trim().toLowerCase();
         if (userRepository.existsByEmail(email)) {
-            throw new BusinessException(
-                    "\n" +
-                            "This email already exists.", HttpStatus.CONFLICT
-            );
+            throw new BusinessException("This email already exists.", HttpStatus.CONFLICT);
         }
 
         User user = User.builder()

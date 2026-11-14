@@ -1,4 +1,4 @@
-package com.example.pos_system.model.service.cateogry;
+package com.example.pos_system.model.service.category;
 
 import com.example.pos_system.common.BusinessException;
 import com.example.pos_system.common.ResourceNotFoundException;

@@ -19,13 +19,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, String>> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("message", "Email or Password Incorrect"));
+                .body(Map.of("message", "Invalid email or password"));
     }
 
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<Map<String, String>> handleDisabled(DisabledException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(Map.of("message", "Account is not found"));
+                .body(Map.of("message", "Account is disabled"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleIntegrity(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Map.of("message", "UNIQUE data"));
+                .body(Map.of("message", "A record with this value already exists"));
     }
 
 

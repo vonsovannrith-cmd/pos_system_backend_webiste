@@ -66,12 +66,10 @@ public class ProductService {
         String barcode = normalizeBlank(request.barCode());
 
         if (productRepository.existsBySku(sku)) {
-            throw new BusinessException("\n" +
-                    "This SKU already exists.", HttpStatus.CONFLICT);
+            throw new BusinessException("This SKU already exists.", HttpStatus.CONFLICT);
         }
         if (barcode != null && productRepository.existsByBarcode(barcode)) {
-            throw new BusinessException("\n" +
-                    "This Barcode already exists.", HttpStatus.CONFLICT);
+            throw new BusinessException("This Barcode already exists.", HttpStatus.CONFLICT);
         }
 
         Product product = new Product();

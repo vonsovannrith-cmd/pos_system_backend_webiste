@@ -2,7 +2,7 @@ package com.example.pos_system.controller;
 
 import com.example.pos_system.dto.request.CategoryRequest;
 import com.example.pos_system.dto.response.CategoryResponse;
-import com.example.pos_system.model.service.cateogry.CategoryService;
+import com.example.pos_system.model.service.category.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

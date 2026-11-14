@@ -40,8 +40,7 @@ public class InventoryService {
         Product product = lockProduct(productId);
         int delta = request.newQuantity() - product.getStockQuantity();
         if (delta == 0) {
-            throw new BusinessException("\n" +
-                    "The stock quantity is as it is, no need to adjust.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("The stock quantity is as it is, no need to adjust.", HttpStatus.BAD_REQUEST);
         }
         return toResponse(applyMovement(product, delta, MovementType.ADJUSTMENT, request.reason().trim(), email));
     }

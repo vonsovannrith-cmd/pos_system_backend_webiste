@@ -67,11 +67,10 @@ public class AuthService {
         User user = userRepository.findByEmail(email).orElseThrow();
 
         if (!passwordEncoder.matches(req.currentPassword(), user.getPassword())) {
-            throw new BusinessException("\n" +
-                    "Current password is incorrect", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("Current password is incorrect", HttpStatus.BAD_REQUEST);
         }
         if (passwordEncoder.matches(req.newPassword(), user.getPassword())) {
-            throw new BusinessException("The new password must be different from the old password.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("New password must be different from the old password", HttpStatus.BAD_REQUEST);
         }
 
         user.setPassword(passwordEncoder.encode(req.newPassword()));
