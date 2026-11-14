@@ -6,15 +6,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(TestcontainersConfig.class)
-@Testcontainers(disabledWithoutDocker = true)
 public abstract class IntegrationTestBase {
 
     @DynamicPropertySource
