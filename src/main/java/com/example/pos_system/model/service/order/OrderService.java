@@ -118,14 +118,60 @@ public class OrderService {
         // 4. Payment Method
         BigDecimal paid;
         BigDecimal change;
-        if (request.paymentMethod() == PaymentMethod.CARD) {
-            if (request.amountPaid() == null || request.amountPaid().compareTo(total) < 0) {
-                throw new BusinessException("The amount is not enough to payment", HttpStatus.BAD_REQUEST);
+
+        if (request.paymentMethod() == PaymentMethod.CASH) {
+
+            if (request.amountPaid() == null) {
+                throw new BusinessException(
+                        "Insufficient amount of riel",
+                        HttpStatus.BAD_REQUEST
+                );
             }
+
+            if (currency == PaymentCurrency.KHR) {
+
+                // Customer pays in KHR
+                if (request.amountPaid().compareTo(totalKhr) < 0) {
+                    throw new BusinessException(
+                            "Insufficient amount of riel",
+                            HttpStatus.BAD_REQUEST
+                    );
+                }
+
+                paid = request.amountPaid().setScale(2, RoundingMode.HALF_UP);
+                change = paid.subtract(totalKhr);
+
+            } else {
+
+                // Customer pays in USD
+                if (request.amountPaid().compareTo(total) < 0) {
+                    throw new BusinessException(
+                            "Insufficient amount of riel",
+                            HttpStatus.BAD_REQUEST
+                    );
+                }
+
+                paid = request.amountPaid().setScale(2, RoundingMode.HALF_UP);
+                change = paid.subtract(total);
+            }
+
+        } else if (request.paymentMethod() == PaymentMethod.CARD) {
+
+            if (request.amountPaid() == null
+                    || request.amountPaid().compareTo(total) < 0) {
+                throw new BusinessException(
+                        "The amount is not enough to payment",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+
             paid = request.amountPaid().setScale(2, RoundingMode.HALF_UP);
             change = paid.subtract(total);
+
         } else {
-            paid = total;                           // KHQR/Card: Pay the exact amount (USD)
+
+            // KHQR: exact payment
+            paid = total;
             change = BigDecimal.ZERO.setScale(2);
         }
 

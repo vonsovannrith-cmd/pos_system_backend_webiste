@@ -4,15 +4,14 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
+# Copy Maven configuration
 COPY pom.xml .
-COPY mvnw .
-COPY .mvn .mvn
 
-RUN chmod +x mvnw
-
+# Copy source code
 COPY src ./src
 
-RUN ./mvnw clean package -DskipTests
+# Build application using Maven installed in the image
+RUN mvn -B -ntp clean package -DskipTests
 
 # Stage 2: Run application
 FROM eclipse-temurin:17-jre

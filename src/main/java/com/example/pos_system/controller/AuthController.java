@@ -7,6 +7,7 @@ import com.example.pos_system.dto.response.AuthResponse;
 import com.example.pos_system.dto.response.UserResponse;
 import com.example.pos_system.model.service.auth.AuthCookies;
 import com.example.pos_system.model.service.auth.AuthService;
+import com.example.pos_system.security.TokenResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final AuthCookies authCookies;
+    private final TokenResolver tokenResolver;
 
     @Value("${app.auth.expose-token:false}")
     private boolean exposeToken;
@@ -50,7 +52,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
+    public ResponseEntity<Void> logout(HttpServletRequest http) {
+        authService.logout(tokenResolver.resolve(http));
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, authCookies.clear().toString())
                 .build();
@@ -67,13 +70,11 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<Void> changPassword(@Valid @RequestBody ChangePasswordRequest request, Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "User is not authenticated"
-            );
-        }
-        authService.changePassword(authentication.getName(), request);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request,
+                                               Authentication authentication) {
+        String newToken = authService.changePassword(authentication.getName(), request);
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, authCookies.create(newToken).toString())    // This session is still logged in.
+                .build();
     }
 }

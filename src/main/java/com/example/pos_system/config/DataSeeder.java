@@ -24,23 +24,42 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // បង្កើត Admin ដោយផ្អែកលើ application.properties / application.yml
+        // Create an Admin based on application.properties / application.properties
         createIfMissing(fullName, email, password, Role.ADMIN);
 
-        // ⚠️ សម្រាប់តេស្តប៉ុណ្ណោះ — លុបចេញមុន Deploy (Phase 6)
+        // ⚠️ For testing only — remove before deployment (Phase 6)
         createIfMissing("Test Cashier", "cashier@pos.com", "Cashier@12345", Role.CASHIER);
     }
 
     private void createIfMissing(String name, String mail, String rawPassword, Role role) {
-        if (userRepository.existsByEmail(mail)) {
+
+        var existingUser = userRepository.findByEmail(mail);
+
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+
+            boolean passwordMatches = passwordEncoder.matches(
+                    rawPassword,
+                    user.getPassword()
+            );
+
+            if (!passwordMatches) {
+                user.setPassword(passwordEncoder.encode(rawPassword));
+                userRepository.save(user);
+
+                log.info("Updated password for existing user: {}", mail);
+            }
+
             return;
         }
+
         userRepository.save(User.builder()
                 .fullName(name)
                 .email(mail)
                 .password(passwordEncoder.encode(rawPassword))
                 .role(role)
                 .build());
+
         log.info("Created user: {}", mail);
     }
 }

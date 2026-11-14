@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build: .
@@ -7,8 +5,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - PORT=8080
-      - DB_URL=jdbc:postgresql://ep-solitary-mountain-b3eaijq4-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
-      - DB_USERNAME=neondb_owner
-      - DB_PASSWORD=npg_dlHFZ6g8hkjf
+      PORT: 8080
+
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      CORS_ORIGINS: "http://localhost:3000,https://pos-system-website-149evos1q-vonsovannrith-8230s-projects.vercel.app"
     restart: always

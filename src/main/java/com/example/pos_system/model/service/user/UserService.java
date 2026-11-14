@@ -66,6 +66,10 @@ public class UserService {
             );
         }
 
+        if (request.role() != user.getRole() || request.active() != user.isActive()) {
+            user.setTokenVersion(user.getTokenVersion() + 1);       // Disable/Enable/Change Role → All existing tokens become invalid
+        }
+
         user.setFullName(request.fullName().trim());
         user.setRole(request.role());
         user.setActive(request.active());
@@ -74,7 +78,9 @@ public class UserService {
 
     // reset password
     public void resetPassword(Long id, ResetPasswordRequest request) {
-        find(id).setPassword(passwordEncoder.encode(request.newPassword()));
+        User user = find(id);
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        user.setTokenVersion(user.getTokenVersion() + 1);
     }
 
     // find id have in database or not?
