@@ -27,7 +27,7 @@ jobs:
           --health-retries 5
 
     env:
-      DB_URL: jdbc:postgresql://localhost:5432/pos_test_db
+      DB_URL: jdbc:postgresql://postgres:5432/pos_test_db
       DB_USERNAME: pos_test_user
       DB_PASSWORD: pos_test_password
       REDIS_ENABLED: "false"
